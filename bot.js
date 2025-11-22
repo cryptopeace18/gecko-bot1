@@ -1,4 +1,5 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
+const chromium = require('@sparticuz/chromium');
 
 const PROXIES = [
   'user-livi0zuaoi1b-sessid-all738ufe778cd55zj5-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
@@ -14,7 +15,7 @@ const PROXIES = [
   'user-livi0zuaoi1b-sessid-allgc5zc2bvmqiba9z1-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
   'user-livi0zuaoi1b-sessid-allb1dv8p5txcy2qtxz-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
   'user-livi0zuaoi1b-sessid-allyd23uc0icy0vffgs-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
-  'user-livi0zuaoi1b-sessid-alla93mw98lvgasop23-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
+  'user-livi0zuaui1b-sessid-alla93mw98lvgasop23-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
   'user-livi0zuaoi1b-sessid-allcjywf1hacjus5teg-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
   'user-livi0zuaoi1b-sessid-allan9qrr5y5q68bs0f-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
   'user-livi0zuaoi1b-sessid-alltf5ftj8kfabj6te8-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
@@ -36,16 +37,15 @@ async function vote() {
   const [user, pass] = auth.split(':');
 
   const browser = await puppeteer.launch({
-    headless: true,
-    args: [
+    args: chromium.args.concat([
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-gpu',
-      '--disable-dev-shm-usage',
-      '--no-zygote',
-      '--single-process',
-      `--proxy-server=http://${ip}`
-    ]
+      '--disable-dev-shm-usage'
+    ]),
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath(),
+    headless: chromium.headless,
   });
 
   const page = await browser.newPage();
@@ -53,9 +53,8 @@ async function vote() {
 
   try {
     await page.goto('https://www.geckoterminal.com/en', { timeout: 60000 });
-    await page.waitForTimeout(3000);
-    await page.click('.aa-DetachedSearchButton, [data-testid="search-button"]')?.catch(() => {});
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(4000);
+    await page.click('.aa-DetachedSearchButton').catch(() => {});
     await page.keyboard.type('0xcf640fdf9b3d9e45cbd69fda91d7e22579c14444');
     await page.keyboard.press('Enter');
     await page.waitForTimeout(12000);
@@ -63,21 +62,21 @@ async function vote() {
     const clicked = await page.evaluate(() => {
       const btn = Array.from(document.querySelectorAll('button, div[role="button"]'))
         .find(el => /good|bullish|👍|🚀/i.test(el.innerText));
-      if (btn) btn.click();
-      return !!btn;
+      if (btn) { btn.click(); return true; }
+      return false;
     });
 
     if (clicked) {
       success++;
-      console.log(`OY ATILDI → ${success} (7/24 çalışıyor!)`);
+      console.log(`OY ATILDI → ${success} (Render Free 7/24 çalışıyor!)`);
     }
-  } catch (e) { }
+  } catch (e) {}
 
   await browser.close();
 }
 
 setInterval(() => {
-  for (let i = 0; i < 15; i++) vote();
-}, 20000);
+  for (let i = 0; i < 12; i++) vote();
+}, 25000);
 
-console.log('GECCO BOT BAŞLADI – Render Free’de 7/24 çalışıyor!');
+console.log('GECCO BOT BAŞLADI – Render Free + @sparticuz/chromium ile 7/24!');
