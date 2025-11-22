@@ -1,4 +1,4 @@
-const { firefox } = require('playwright');
+const puppeteer = require('puppeteer');
 
 const PROXIES = [
   'user-livi0zuaoi1b-sessid-all738ufe778cd55zj5-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
@@ -29,44 +29,55 @@ const PROXIES = [
 ];
 
 let success = 0;
-const delay = ms => new Promise(r => setTimeout(r, ms));
 
 async function vote() {
   const proxy = PROXIES[Math.floor(Math.random() * PROXIES.length)];
-  const [auth, host] = proxy.split('@');
+  const [auth, ip] = proxy.split('@');
   const [user, pass] = auth.split(':');
 
-  const browser = await firefox.launch({
+  const browser = await puppeteer.launch({
     headless: true,
-    proxy: { server: `http://${host}`, username: user, password: pass }
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-gpu',
+      '--disable-dev-shm-usage',
+      '--no-zygote',
+      '--single-process',
+      `--proxy-server=http://${ip}`
+    ]
   });
+
   const page = await browser.newPage();
+  await page.authenticate({ username: user, password: pass });
 
   try {
     await page.goto('https://www.geckoterminal.com/en', { timeout: 60000 });
-    await page.click('.aa-DetachedSearchButton')?.catch(() => page.keyboard.press('/'));
-    await delay(2000);
+    await page.waitForTimeout(3000);
+    await page.click('.aa-DetachedSearchButton, [data-testid="search-button"]')?.catch(() => {});
+    await page.waitForTimeout(2000);
     await page.keyboard.type('0xcf640fdf9b3d9e45cbd69fda91d7e22579c14444');
     await page.keyboard.press('Enter');
-    await delay(12000);
+    await page.waitForTimeout(12000);
 
     const clicked = await page.evaluate(() => {
-      const btn = [...document.querySelectorAll('button, div[role="button"]')]
-        .find(b => /good|bullish|🚀/i.test(b.innerText));
-      if (btn) { btn.click(); return true; }
-      return false;
+      const btn = Array.from(document.querySelectorAll('button, div[role="button"]'))
+        .find(el => /good|bullish|👍|🚀/i.test(el.innerText));
+      if (btn) btn.click();
+      return !!btn;
     });
 
     if (clicked) {
       success++;
       console.log(`OY ATILDI → ${success} (7/24 çalışıyor!)`);
     }
-  } catch (e) { console.log('Hata, yeniden deneniyor...'); }
+  } catch (e) { }
+
   await browser.close();
 }
 
 setInterval(() => {
-  for (let i = 0; i < 20; i++) vote();
-}, 15000);
+  for (let i = 0; i < 15; i++) vote();
+}, 20000);
 
-console.log('GECCO BOT 7/24 BAŞLADI – SAATTE 1000+ OY!');
+console.log('GECCO BOT BAŞLADI – Render Free’de 7/24 çalışıyor!');
