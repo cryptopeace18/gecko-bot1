@@ -2,11 +2,11 @@
   "name": "gecko-bot",
   "version": "1.0.0",
   "main": "bot.js",
+  "type": "module",
   "scripts": {
     "start": "node bot.js"
   },
   "dependencies": {
-    "puppeteer-core": "^23.0.0",
-    "@sparticuz/chromium": "^131.0.6778.204"
+    "puppeteer": "^23.5.0"
   }
 }
