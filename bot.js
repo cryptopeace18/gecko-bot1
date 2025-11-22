@@ -20,14 +20,19 @@ const PROXIES = [
   'user-livi0zuaoi1b-sessid-alltf5ftj8kfabj6te8-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
   'user-livi0zuaoi1b-sessid-allnst7ide7xludh7c8-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
   'user-livi0zuaoi1b-sessid-allmb2dift7bg7ecmzv-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
-  'user-livi0zuaoi1b-sessid-allu3wlihgk5xxpsdb9-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233 &[...devamı var, tam 25 tane]
+  'user-livi0zuaoi1b-sessid-allu3wlihgk5xxpsdb9-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
+  'user-livi0zuaoi1b-sessid-all5kp1qpgjekldc2d4-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
+  'user-livi0zuaoi1b-sessid-all5fli4ruoirbjzwzy-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
+  'user-livi0zuaoi1b-sessid-all98ndskgbefohj19h-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
+  'user-livi0zuaoi1b-sessid-allzcakzulqo5r3hcan-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233',
+  'user-livi0zuaoi1b-sessid-allxe7oflzfm1e0w91e-sesstime-90:Qyu4Q0l4UxL4q@pr.lunaproxy.com:12233'
 ];
 
 let success = 0;
 const delay = ms => new Promise(r => setTimeout(r, ms));
 
 async function vote() {
-  const proxy = PROXIES[Math.floor(Math.random()*PROXIES.length)];
+  const proxy = PROXIES[Math.floor(Math.random() * PROXIES.length)];
   const [auth, host] = proxy.split('@');
   const [user, pass] = auth.split(':');
 
@@ -47,7 +52,7 @@ async function vote() {
 
     const clicked = await page.evaluate(() => {
       const btn = [...document.querySelectorAll('button, div[role="button"]')]
-        .find(b => /good|bullish/i.test(b.innerText));
+        .find(b => /good|bullish|🚀/i.test(b.innerText));
       if (btn) { btn.click(); return true; }
       return false;
     });
@@ -56,7 +61,7 @@ async function vote() {
       success++;
       console.log(`OY ATILDI → ${success} (7/24 çalışıyor!)`);
     }
-  } catch (e) { }
+  } catch (e) { console.log('Hata, yeniden deneniyor...'); }
   await browser.close();
 }
 
